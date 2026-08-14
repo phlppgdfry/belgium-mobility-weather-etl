@@ -1,0 +1,13 @@
+mobility_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: mobility
+      password: mobility
+      dbname: mobility
+      schema: public
+      threads: 4
+

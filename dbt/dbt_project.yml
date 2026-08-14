@@ -1,0 +1,10 @@
+name: mobility_analytics
+version: "1.0"
+config-version: 2
+profile: mobility_analytics
+model-paths: ["models"]
+models:
+  mobility_analytics:
+    staging: {+materialized: view}
+    marts: {+materialized: table}
+
