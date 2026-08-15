@@ -19,8 +19,8 @@ CITIES = (
 
 CITYBIKES_VILLO_URL = "https://api.citybik.es/v2/networks/villo"
 MIN_EXPECTED_STATIONS = 100
-MAX_SOURCE_STALENESS_MINUTES = 180
+MAX_SOURCE_STALENESS_MINUTES = int(os.getenv("MAX_SOURCE_STALENESS_MINUTES", "0"))
 
 
 def database_url() -> str:
-    return os.getenv("DATABASE_URL", "postgresql+psycopg://mobility:mobility@localhost:5432/mobility")
+    return os.getenv("DATABASE_URL", "postgresql+psycopg://mobility:mobility@localhost:5433/mobility")

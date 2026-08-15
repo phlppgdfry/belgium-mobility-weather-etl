@@ -17,7 +17,7 @@ def validate_station_snapshots(snapshots: pd.DataFrame) -> dict[str, int | float
     if snapshots.duplicated(["station_id", "snapshot_at"]).any():
         raise ValueError("Duplicate station snapshots detected.")
     latest_source = snapshots["source_updated_at"].dropna().max()
-    if pd.notna(latest_source):
+    if MAX_SOURCE_STALENESS_MINUTES > 0 and pd.notna(latest_source):
         age = (datetime.now(UTC) - latest_source.to_pydatetime()).total_seconds() / 60
         if age > MAX_SOURCE_STALENESS_MINUTES:
             raise ValueError(f"Bike-share source is stale ({age:.0f} minutes old).")
