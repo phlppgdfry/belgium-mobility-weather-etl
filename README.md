@@ -35,6 +35,8 @@ flowchart LR
 
 ## Dashboard
 
+![Dashboard preview: live Villo! availability, station map and low-availability ranking](docs/images/dashboard-preview.png)
+
 After one successful local run, the dashboard shows:
 
 - A map of all Villo! stations, sized by available bikes and coloured by availability state.
