@@ -19,6 +19,31 @@ It is deliberately **idempotent** for weather and **append-only** for live bike-
 
 `100 + 20 during commute hours − (12 × precipitation, capped at 55)`
 
+## Architecture
+
+```mermaid
+flowchart LR
+  A[Open-Meteo<br/>forecast API] --> E[Prefect ETL flow]
+  B[CityBikes<br/>Villo! station API] --> E
+  E --> Q{Quality gates}
+  Q -->|valid| R[(Raw payload archive)]
+  Q -->|valid| W[(PostgreSQL warehouse)]
+  W --> D[dbt analytics marts]
+  W --> S[Streamlit dashboard]
+  Q -->|invalid| F[Fail visibly with logs]
+```
+
+## Dashboard
+
+After one successful local run, the dashboard shows:
+
+- A map of all Villo! stations, sized by available bikes and coloured by availability state.
+- Live KPIs: total stations, bikes available and empty stations.
+- The 15 stations with the fewest available bikes.
+- A Brussels weather-adjusted mobility-demand forecast.
+
+On the verified first run, the pipeline loaded **346 Villo! stations**, **346 availability snapshots** and **360 weather forecast records**.
+
 ## Stack
 
 | Concern | Choice | What it demonstrates |
@@ -37,7 +62,6 @@ Prerequisites: Python 3.11+ and Docker Desktop.
 ```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/belgium-mobility-weather-etl.git
 cd belgium-mobility-weather-etl
-cp .env.example .env
 make up
 make install
 make run
@@ -45,6 +69,8 @@ make dashboard
 ```
 
 The dashboard opens at `http://localhost:8501`. PostgreSQL is exposed on port `5433`, avoiding conflicts with a database already running on your Mac. Run `make test` and `make lint` before committing. `docker compose up --build` starts PostgreSQL and the dashboard together.
+
+If `5433` is also occupied, choose another host port in `docker-compose.yml` and update `DATABASE_URL` to match. Never use a bare `localhost:5432` blindly: many developer machines already have another PostgreSQL instance running there.
 
 ## What the pipeline stores
 
