@@ -14,7 +14,16 @@ services:
       retries: 10
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  dashboard:
+    build: .
+    command: streamlit run dashboard/app.py --server.address 0.0.0.0
+    environment:
+      DATABASE_URL: postgresql+psycopg://mobility:mobility@postgres:5432/mobility
+    ports:
+      - "8501:8501"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
-
