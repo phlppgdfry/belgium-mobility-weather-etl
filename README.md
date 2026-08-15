@@ -44,7 +44,7 @@ make run
 make dashboard
 ```
 
-The dashboard opens at `http://localhost:8501`. Run `make test` and `make lint` before committing. `docker compose up --build` starts PostgreSQL and the dashboard together.
+The dashboard opens at `http://localhost:8501`. PostgreSQL is exposed on port `5433`, avoiding conflicts with a database already running on your Mac. Run `make test` and `make lint` before committing. `docker compose up --build` starts PostgreSQL and the dashboard together.
 
 ## What the pipeline stores
 
@@ -56,7 +56,7 @@ The dashboard opens at `http://localhost:8501`. Run `make test` and `make lint` 
 | Fact | `fact_mobility_weather` | Forecast weather and contextual demand signal |
 | Operations | `etl_run_audit` | Reserved audit table for run-level monitoring |
 
-Before loading, the pipeline rejects a station feed with too few stations, negative values, duplicate snapshots or source data older than three hours.
+Before loading, the pipeline rejects a station feed with too few stations, negative values or duplicate snapshots. To make freshness a blocking production gate, set `MAX_SOURCE_STALENESS_MINUTES=180` (or your own threshold); it is disabled locally because public aggregators can publish delayed upstream timestamps.
 
 ## Run it automatically
 

@@ -69,7 +69,10 @@ def load_station_status(dimensions: pd.DataFrame, snapshots: pd.DataFrame, engin
     """Upsert station attributes and retain every real-time availability snapshot."""
     initialize_schema(engine)
     with engine.begin() as connection:
-        connection.execute(text("CREATE TEMP TABLE staging_stations (LIKE dim_bike_station) ON COMMIT DROP"))
+        connection.execute(text("""CREATE TEMP TABLE staging_stations (
+            network TEXT NOT NULL, city TEXT NOT NULL, station_id TEXT NOT NULL, station_name TEXT NOT NULL,
+            latitude DOUBLE PRECISION NOT NULL, longitude DOUBLE PRECISION NOT NULL, capacity INTEGER NOT NULL
+        ) ON COMMIT DROP"""))
         dimensions.to_sql("staging_stations", connection, if_exists="append", index=False)
         connection.execute(text("""INSERT INTO dim_bike_station (network, city, station_id, station_name, latitude, longitude, capacity)
             SELECT network, city, station_id, station_name, latitude, longitude, capacity FROM staging_stations
