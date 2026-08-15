@@ -3,7 +3,7 @@ name = "mobility-etl"
 version = "0.1.0"
 description = "Production-style ETL pipeline combining Belgian city weather and mobility demand signals."
 requires-python = ">=3.11"
-dependencies = ["pandas>=2.2,<3", "prefect>=3.0,<4", "psycopg[binary]>=3.2,<4", "requests>=2.32,<3", "sqlalchemy>=2.0,<3"]
+dependencies = ["pandas>=2.2,<3", "prefect>=3.0,<4", "psycopg[binary]>=3.2,<4", "requests>=2.32,<3", "sqlalchemy>=2.0,<3", "pydantic>=2.10,<3"]
 
 [project.optional-dependencies]
 dashboard = ["streamlit>=1.38,<2", "plotly>=5.24,<6"]
@@ -26,4 +26,3 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-
