@@ -90,6 +90,8 @@ Before loading, the pipeline rejects a station feed with too few stations, negat
 
 `.github/workflows/scheduled-pipeline.yml` runs hourly and can also be triggered manually. To enable it, create a GitHub environment called `production` and add its `DATABASE_URL` secret, using a hosted PostgreSQL URL (for example Neon, Supabase or Railway). GitHub Actions must be enabled for the repository.
 
+Until that secret exists, the scheduled workflow exits successfully with an explicit **ETL skipped** notice. This keeps CI green while the project is used locally.
+
 ### dbt (optional analytics layer)
 
 Install `dbt-postgres`, copy the example profile to your dbt profiles directory, then run:

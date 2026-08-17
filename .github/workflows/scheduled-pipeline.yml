@@ -17,4 +17,9 @@ jobs:
       - name: Run pipeline
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: mobility-etl
+        run: |
+          if [ -z "${DATABASE_URL}" ]; then
+            echo "::notice title=ETL skipped::No DATABASE_URL secret is configured. Add one to the production environment to enable scheduled loads."
+            exit 0
+          fi
+          mobility-etl
