@@ -4,9 +4,9 @@ mobility_analytics:
     dev:
       type: postgres
       host: localhost
-      port: 5432
+      port: 5433
       user: mobility
-      password: mobility
+      password: "{{ env_var('MOBILITY_POSTGRES_PASSWORD') }}"
       dbname: mobility
       schema: public
       threads: 4

@@ -12,7 +12,7 @@ st.caption("Live Villo! availability snapshots, historical signals and weather c
 
 @st.cache_data(ttl=300)
 def read_data() -> pd.DataFrame:
-    url = os.getenv("DATABASE_URL", "postgresql+psycopg://mobility:mobility@localhost:5433/mobility")
+    url = os.environ["DATABASE_URL"]
     engine = create_engine(url)
     stations = pd.read_sql("""SELECT s.*, d.station_name, d.latitude, d.longitude, d.capacity
         FROM fact_station_status s JOIN dim_bike_station d USING (station_id)
@@ -22,7 +22,7 @@ def read_data() -> pd.DataFrame:
 
 try:
     data, weather = read_data()
-except (SQLAlchemyError, ValueError):
+except (SQLAlchemyError, ValueError, KeyError):
     st.info("Run the ETL first: `mobility-etl`. Then reload this page.")
     st.stop()
 

@@ -64,6 +64,10 @@ Prerequisites: Python 3.11+ and Docker Desktop.
 ```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/belgium-mobility-weather-etl.git
 cd belgium-mobility-weather-etl
+python3 scripts/setup_local_env.py
+set -a
+source .env
+set +a
 make up
 make install
 make run
@@ -131,3 +135,21 @@ The dbt mart aggregates those rows into a daily city-demand view.
 ## Data source
 
 Weather forecast data comes from [Open-Meteo](https://open-meteo.com/). Live Villo! availability comes through the [CityBikes API](https://api.citybik.es/v2/networks/villo), following the [GBFS](https://gbfs.org/) ecosystem. Check each source’s attribution and usage terms before a production deployment.
+
+## Local database credentials
+
+Run `python3 scripts/setup_local_env.py` before starting a new local database. It
+creates a private `.env` with a random password and matching `DATABASE_URL`, and
+refuses to overwrite existing configuration. Docker Compose reads `.env`; for
+Python commands, dbt or Prisma CLI, export it first:
+
+```bash
+set -a
+source .env
+set +a
+```
+
+For an existing PostgreSQL volume, keep its current credentials until you change
+the database role password and update `.env` together. Changing an environment
+variable does not rotate the password stored in PostgreSQL. Never reuse the old
+public demo credentials on a reachable or production database.

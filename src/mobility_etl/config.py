@@ -23,4 +23,4 @@ MAX_SOURCE_STALENESS_MINUTES = int(os.getenv("MAX_SOURCE_STALENESS_MINUTES", "0"
 
 
 def database_url() -> str:
-    return os.getenv("DATABASE_URL", "postgresql+psycopg://mobility:mobility@localhost:5433/mobility")
+    return os.environ["DATABASE_URL"]

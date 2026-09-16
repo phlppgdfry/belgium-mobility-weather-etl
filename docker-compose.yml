@@ -4,9 +4,9 @@ services:
     environment:
       POSTGRES_DB: ${MOBILITY_POSTGRES_DB:-mobility}
       POSTGRES_USER: ${MOBILITY_POSTGRES_USER:-mobility}
-      POSTGRES_PASSWORD: ${MOBILITY_POSTGRES_PASSWORD:-mobility}
+      POSTGRES_PASSWORD: ${MOBILITY_POSTGRES_PASSWORD:?Run python3 scripts/setup_local_env.py first}
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
@@ -18,7 +18,7 @@ services:
     build: .
     command: streamlit run dashboard/app.py --server.address 0.0.0.0
     environment:
-      DATABASE_URL: postgresql+psycopg://mobility:mobility@postgres:5432/mobility
+      DATABASE_URL: postgresql+psycopg://${MOBILITY_POSTGRES_USER:-mobility}:${MOBILITY_POSTGRES_PASSWORD:?Set MOBILITY_POSTGRES_PASSWORD}@postgres:5432/${MOBILITY_POSTGRES_DB:-mobility}
     ports:
       - "8501:8501"
     depends_on:
