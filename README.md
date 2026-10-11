@@ -1,5 +1,7 @@
 # Belgium Bike Share Intelligence ETL
 
+> **Nederlands leren met deze repo:** [Start de leergids](docs/leren/README.md) — code stap voor stap, vaardigheden, oefeningen met antwoorden, herhaalkaarten en je eigen leerlogboek.
+
 > A production-minded data product that combines Belgian weather forecasts with live Villo! bike-share availability, retains historical snapshots, validates data quality and exposes operational insights.
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
