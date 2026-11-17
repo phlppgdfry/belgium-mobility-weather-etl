@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Belgium Bike Share ETL — live Villo! availability and weather, through a tested ETL pipeline</title>
+<meta name="description" content="A production-minded Python ETL that combines Open-Meteo forecasts with live Villo! bike-share availability in Brussels: retries, quality gates, PostgreSQL, dbt marts and a Streamlit dashboard. The showcase runs the same transforms live in your browser.">
+<link rel="canonical" href="https://phlppgdfry.github.io/belgium-mobility-weather-etl/">
+<meta property="og:type" content="website"><meta property="og:title" content="Belgium Bike Share ETL — live Villo! availability and weather, through a tested ETL pipeline"><meta property="og:description" content="A production-minded Python ETL that combines Open-Meteo forecasts with live Villo! bike-share availability in Brussels: retries, quality gates, PostgreSQL, dbt marts and a Streamlit dashboard. The showcase runs the same transforms live in your browser.">
+<meta property="og:url" content="https://phlppgdfry.github.io/belgium-mobility-weather-etl/"><meta property="og:image" content="https://phlppgdfry.github.io/belgium-mobility-weather-etl/og.jpg"><meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0a0d12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23facc15'/%3E%3C/svg%3E">
+<link rel="preload" href="assets/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/showcase.css">
+<style>:root{--brand:#facc15;--accent-ink:#191400}
+.bm-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.bm-sm{padding:7px 11px;font-size:13px}
+.bm-gates{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 0}
+.bm-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+.bm-grid>*{min-width:0}
+@media (max-width:900px){.bm-grid{grid-template-columns:1fr}}
+.bm-card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.bm-ct{font-size:13px;color:var(--muted);margin-bottom:8px}
+#bm-map{width:100%;height:auto;display:block;max-height:460px}
+#bm-map circle{stroke:var(--bg2);stroke-width:1;cursor:pointer;opacity:.9}
+#bm-map circle:hover{stroke:var(--fg);stroke-width:2}
+#bm-map .healthy,.bm-key .healthy{fill:var(--ok);background:var(--ok)}
+#bm-map .empty,.bm-key .empty{fill:var(--warn);background:var(--warn)}
+#bm-map .full,.bm-key .full{fill:var(--info);background:var(--info)}
+#bm-map .unavailable,.bm-key .unavailable{fill:var(--bad);background:var(--bad)}
+.bm-key i{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 3px 0 8px;vertical-align:-1px}
+#bm-low td{font-size:13px}
+#bm-chart{width:100%;height:auto;display:block}
+#bm-chart .d{fill:color-mix(in srgb,var(--accent) 55%,transparent)} #bm-chart .d.c{fill:var(--accent)}
+#bm-chart .rain{fill:var(--info);opacity:.85}
+#bm-chart .ref{stroke:var(--line2);stroke-dasharray:4 4}
+#bm-chart .ax{font:10px var(--mono);fill:var(--dim)}
+#bm-tiles{grid-template-columns:repeat(4,1fr)}
+</style>
+</head>
+<body>
+<div class="top"><div class="wrap">
+  <a class="brand" href="#"><i class="dot"></i><span>Belgium Bike Share ETL</span></a>
+  <nav><a class="" href="#demo">Try it</a><a class="" href="#how">How it works</a><a class="hide-sm" href="#run">Run it</a><a href="https://github.com/phlppgdfry/belgium-mobility-weather-etl" aria-label="GitHub repository">GitHub</a><button class="theme" type="button" aria-label="Toggle light or dark theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button></nav>
+</div></div>
+<main>
+<header class="hero"><div class="wrap grid">
+  <div>
+    <div class="kicker"><span>Python · Prefect · PostgreSQL · dbt</span><span class="chip status">Prototype</span></div>
+    <h1>Brussels bike share, <em>live</em>, with the pipeline's own rules.</h1>
+    <p class="lede">Every hour the pipeline pulls every Villo! station and a three-day forecast for five Belgian cities, refuses data that fails its quality gates, keeps an append-only history in PostgreSQL and models it with dbt. This page applies the same transforms to the live feeds, right now, in your browser.</p>
+    <div class="ctas"><a class="btn primary" href="#demo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> See it live</a><a class="btn" href="https://github.com/phlppgdfry/belgium-mobility-weather-etl"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg> Source on GitHub</a></div>
+    <div class="stack"><span class="chip">Python 3.11</span><span class="chip">Pandas</span><span class="chip">Prefect</span><span class="chip">PostgreSQL 16</span><span class="chip">dbt</span><span class="chip">Streamlit</span><span class="chip">pytest · Ruff</span><span class="chip">GitHub Actions</span></div>
+  </div>
+  <div class="hero-visual"><div class="frame"><div class="bar"><i></i><i></i><i></i><b>localhost:8501 · Streamlit dashboard</b></div><img src="img/docs-images-dashboard-preview.webp" alt="Belgium Bike Share ETL" width="1600" height="919"></div><div class="caption">The pipeline&#x27;s Streamlit dashboard after a verified local run: 346 stations, 346 snapshots, 360 forecast records.</div></div>
+</div></header>
+<section id="why"><div class="wrap">
+  <p class="eyebrow">Why it exists</p><h2>A notebook that worked once is not a data product.</h2>
+  <div class="problem">
+    <div class="card before"><div class="label">Without it</div><p>A one-off script calls two APIs, overwrites yesterday's numbers and silently accepts whatever comes back: a half-empty feed, a duplicate station or a stale timestamp ends up in the chart as if it were real.</p></div>
+    <div class="card after"><div class="label">With it</div><p>Extraction retries with timeouts; quality gates fail the run loudly on too few stations, negative counts or duplicates; weather loads are idempotent and station snapshots append-only, so history builds up. dbt turns that into marts a dashboard can trust.</p></div>
+  </div>
+</div></section>
+<section id="demo"><div class="wrap">
+  <p class="eyebrow">Try it · runs in your browser</p><h2>Live from the same sources, transformed the same way</h2>
+  <p class="sub">Fetched now from the public CityBikes and Open-Meteo APIs. Station states, occupancy and the demand score use the formulas in <code>transform.py</code>; the badges are the checks in <code>quality.py</code>, plus one data-quality observation the pipeline does not check yet.</p>
+  <div class="demo"><div class="bm-head"><div id="bm-status" class="small dim">Fetching live data from CityBikes and Open-Meteo…</div><button type="button" class="btn bm-sm" id="bm-refresh">Refresh</button></div>
+<div class="kpi-tiles" id="bm-tiles"></div>
+<div id="bm-gates" class="bm-gates"></div>
+<div class="bm-grid">
+  <div class="bm-card"><div class="bm-ct">Villo! stations right now · <span class="bm-key"><i class="healthy"></i>healthy <i class="empty"></i>empty <i class="full"></i>full <i class="unavailable"></i>unavailable</span></div><svg id="bm-map" role="img" aria-label="Map of Villo stations coloured by availability"></svg><div id="bm-hover" class="small dim">Hover or tap a station.</div></div>
+  <div class="bm-card"><div class="bm-ct">Lowest availability</div><table class="tbl" id="bm-low"></table></div>
+</div>
+<div class="bm-card" style="margin-top:14px">
+  <div class="bm-ct" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>Estimated mobility demand, next 48 h · <span class="mono small">100 + 20 at commute hours − 12 × rain mm (max 55), floor 20</span></span><select id="bm-city" style="width:auto"></select></div>
+  <svg id="bm-chart" role="img" aria-label="Hourly demand score and rain"></svg>
+</div>
+</div>
+  <p class="note">The demand score is an explainable contextual proxy, not observed trip data. Nothing is stored: the real pipeline writes each snapshot to PostgreSQL to build a time series.</p>
+</div></section>
+<section id="how"><div class="wrap">
+  <p class="eyebrow">How it works</p><h2>Extract, validate, load, model, show</h2>
+  
+  <div class="cards"><div class="card"><div class="ic">01</div><h3>Two public sources</h3><p>Open-Meteo hourly forecasts for Antwerp, Brussels, Ghent, Leuven and Liège; CityBikes for every Villo! station in Brussels.</p></div><div class="card"><div class="ic">02</div><h3>Quality gates that fail visibly</h3><p>At least 100 stations, no negative counts, no duplicate snapshots and an optional staleness limit. A failing gate stops the load instead of polluting the warehouse.</p></div><div class="card"><div class="ic">03</div><h3>History by design</h3><p>Weather upserts are idempotent; station snapshots are append-only, so every run adds a real point in time.</p></div><div class="card"><div class="ic">04</div><h3>dbt marts and a dashboard</h3><p>Staging models, a latest-status mart and a daily demand mart feed the Streamlit map, KPIs and rankings.</p></div></div>
+  <h3 style="margin:34px 0 14px">The flow, step by step</h3><div class="flow" role="list"><div class="node"><div class="n">01</div><b>Extract</b><small>Open-Meteo + CityBikes, with retries and timeouts</small></div><div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="node"><div class="n">02</div><b>Transform</b><small>occupancy, availability state, demand score</small></div><div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="node hl"><div class="n">03</div><b>Quality gates</b><small>fail fast on broken or stale data</small></div><div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="node"><div class="n">04</div><b>PostgreSQL</b><small>raw archive, upserts and append-only snapshots</small></div><div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><div class="node"><div class="n">05</div><b>dbt + Streamlit</b><small>marts, map, KPIs and forecast</small></div></div>
+</div></section>
+<section id="evidence"><div class="wrap">
+  <p class="eyebrow">Evidence</p><h2>What is real, and what is not</h2>
+  
+  <div class="metrics"><div class="metric"><div class="v">346</div><div class="l">stations loaded</div><div class="s">on the verified first local run</div></div><div class="metric"><div class="v">360</div><div class="l">forecast records</div><div class="s">5 cities × 72 hours</div></div><div class="metric"><div class="v">4</div><div class="l">quality gates</div><div class="s">station count, negatives, duplicates, staleness</div></div></div>
+  <div class="honest" style="margin-top:18px">
+      <div class="card real"><h3><span class="pill ok">REAL</span> Built and verified</h3><ul><li>Extraction from two live public APIs, transforms and quality gates with pytest coverage</li><li>PostgreSQL loading, dbt models and a Streamlit dashboard, verified in a local Docker run</li><li>CI with Ruff and pytest; an hourly scheduled workflow ready for a database secret</li><li>The live panel on this page applies the same formulas to today's data</li></ul></div>
+      <div class="card sim"><h3><span class="pill warn">SIMULATED</span> Mocked or not built yet</h3><ul><li>The demand score is a transparent proxy, not observed bike trips</li><li>No hosted warehouse: the scheduled workflow skips the load until a DATABASE_URL secret is set</li><li>Station <code>last_updated</code> values carry no timezone; the pipeline currently reads them as UTC</li></ul></div></div>
+</div></section>
+<section id="run"><div class="wrap two">
+  <div><p class="eyebrow">Run it yourself</p><h2>Run it locally</h2>
+  <p class="sub">Requires Python 3.11+ and Docker Desktop. Both APIs are public; no keys needed.</p>
+  <div class="code"><button class="copy" type="button">Copy</button><pre><code>git clone https://github.com/phlppgdfry/belgium-mobility-weather-etl.git
+cd belgium-mobility-weather-etl
+python3 scripts/setup_local_env.py
+set -a; source .env; set +a
+make up        # PostgreSQL in Docker
+make install
+make run       # extract → validate → load
+make dashboard # Streamlit on http://localhost:8501
+make test      # pytest
+
+<span class="c"># optional analytics layer: see README → dbt (dbt-postgres + profile)</span></code></pre></div></div>
+  <div><p class="eyebrow">Go deeper</p><h2>Read the source</h2>
+  <div class="links"><a href="https://github.com/phlppgdfry/belgium-mobility-weather-etl"><span>Repository</span><span>github</span></a><a href="https://github.com/phlppgdfry/belgium-mobility-weather-etl/blob/HEAD/src/mobility_etl/transform.py"><span>Transforms</span><span>py</span></a><a href="https://github.com/phlppgdfry/belgium-mobility-weather-etl/blob/HEAD/src/mobility_etl/quality.py"><span>Quality gates</span><span>py</span></a><a href="https://github.com/phlppgdfry/belgium-mobility-weather-etl/blob/HEAD/dbt/models/marts/mart_city_daily_demand.sql"><span>dbt marts</span><span>sql</span></a><a href="https://github.com/phlppgdfry/belgium-mobility-weather-etl/blob/HEAD/docs/leren/README.md"><span>Learning guide (Dutch)</span><span>nl</span></a></div></div>
+</div></section></main>
+<footer><div class="wrap">
+  <span>Belgium Bike Share ETL · A portfolio project by Philippe Godfroy</span>
+  <span><a href="https://www.philippegodfroy.com/work">More projects</a> · <a href="https://github.com/phlppgdfry/belgium-mobility-weather-etl">Source</a></span>
+</div></footer>
+<script src="assets/showcase.js"></script>
+<script src="assets/demo.js"></script>
+</body></html>

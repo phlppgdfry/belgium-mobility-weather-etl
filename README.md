@@ -1,5 +1,11 @@
 # Belgium Bike Share Intelligence ETL
 
+<!-- showcase:start -->
+> **[▶ Live dashboard](https://phlppgdfry.github.io/belgium-mobility-weather-etl/)** — every Villo! station in Brussels right now, the pipeline's quality gates and a 48-hour demand forecast, computed in your browser with the same transforms.
+
+[![Live dashboard: belgium-mobility-weather-etl](site/preview.png)](https://phlppgdfry.github.io/belgium-mobility-weather-etl/)
+<!-- showcase:end -->
+
 > **Nederlands leren met deze repo:** [Start de leergids](docs/leren/README.md) — code stap voor stap, vaardigheden, oefeningen met antwoorden, herhaalkaarten en je eigen leerlogboek.
 
 > A production-minded data product that combines Belgian weather forecasts with live Villo! bike-share availability, retains historical snapshots, validates data quality and exposes operational insights.
@@ -7,7 +13,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 ![Prefect](https://img.shields.io/badge/Orchestration-Prefect-024DFD)
-![CI](https://github.com/YOUR_GITHUB_USERNAME/belgium-mobility-weather-etl/actions/workflows/quality.yml/badge.svg)
+![CI](https://github.com/phlppgdfry/belgium-mobility-weather-etl/actions/workflows/quality.yml/badge.svg)
 
 ## Why this project
 
@@ -64,7 +70,7 @@ On the verified first run, the pipeline loaded **346 Villo! stations**, **346 av
 Prerequisites: Python 3.11+ and Docker Desktop.
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/belgium-mobility-weather-etl.git
+git clone https://github.com/phlppgdfry/belgium-mobility-weather-etl.git
 cd belgium-mobility-weather-etl
 python3 scripts/setup_local_env.py
 set -a
