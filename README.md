@@ -100,9 +100,9 @@ Before loading, the pipeline rejects a station feed with too few stations, negat
 
 ## Run it automatically
 
-`.github/workflows/scheduled-pipeline.yml` runs hourly and can also be triggered manually. To enable it, create a GitHub environment called `production` and add its `DATABASE_URL` secret, using a hosted PostgreSQL URL (for example Neon, Supabase or Railway). GitHub Actions must be enabled for the repository.
+`.github/workflows/scheduled-pipeline.yml` can run hourly and can always be triggered manually. To enable the schedule, create a GitHub environment called `production` with a `DATABASE_URL` secret (a hosted PostgreSQL URL, for example Neon, Supabase or Railway), then set the repository variable `SCHEDULED_ETL` to `true`.
 
-Until that secret exists, the scheduled workflow exits successfully with an explicit **ETL skipped** notice. This keeps CI green while the project is used locally.
+Until that variable is set, scheduled runs are skipped before any runner starts, so no Actions minutes are spent on a pipeline without a warehouse. A manual run without the secret still exits successfully with an explicit **ETL skipped** notice.
 
 ### dbt (optional analytics layer)
 
