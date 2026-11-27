@@ -5,6 +5,9 @@ on:
     - cron: "17 * * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   run-etl:
     # Scheduled runs only start once a warehouse exists: set the repository variable
